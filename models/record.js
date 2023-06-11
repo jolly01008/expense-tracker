@@ -5,9 +5,9 @@ const RecordSchema = new Schema(
     {
       name:{ type: String, required: true },
       date:{ type: Date, required: true },
-      amount:{ type: Number, required: true }
-      userId:{ type:Schema.type.ObjectId, ref:'User', index: true, required: true }
-      categoryld:{ type:Object.type.userId, ref:'Category', index: true , required:true }
+      amount:{ type: Number, required: true },
+      userId:{ type: Schema.Types.ObjectId, ref:'User', index: true, required: true },
+      categoryId:{ type: Schema.Types.ObjectId, ref:'Category', index: true , required:true }
     }
 )
 
