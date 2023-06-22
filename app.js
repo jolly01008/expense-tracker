@@ -20,6 +20,12 @@ app.use(session({
 
 usePassport(app)
 
+app.use((req,res,next) => {
+  res.locals.isAuthenticated = req.isAuthenticated()
+  res.locals.user = req.user   //req.user是反序列化取出的user資訊
+  next()
+})
+
 app.use(routes)
 
 
