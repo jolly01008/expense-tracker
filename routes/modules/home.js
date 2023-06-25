@@ -19,7 +19,7 @@ router.get('/' , async (req,res) => {
     const formattedDate = new Date(record.date).toISOString().slice( 0 , 10 )
     totalAmount += record.amount
     formattedRecords.push({...record , categoryIcon: category.icon , date: formattedDate})
-    console.log('formattedRecords:',formattedRecords)
+    // console.log('formattedRecords:',formattedRecords)
   }
   res.render('index',{ records: formattedRecords , totalAmount })
 })
