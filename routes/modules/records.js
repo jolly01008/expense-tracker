@@ -10,12 +10,7 @@ router.get('/new' , (req,res)=>{
     .catch(err => console.log(err))
 })
 
-router.post('/new' , (req,res)=>{
-  // const record = req.body
-  // console.log('record:',record)
-  // Record.create({...record})
-  //   .then(() => res.redirect('/'))
-  //   .catch(err = console.log(err))
+router.post('/new' , (req,res) => {
   console.log('req:',req)
   const userId = req.user._id
   const record = req.body
@@ -53,5 +48,14 @@ router.put('/:id' , (req,res) => {
     .then(() => res.redirect('/'))
     .catch(err => console.log(err))
 })
+
+router.delete('/:id' , (req,res) => {
+  const userId = req.user._id
+  const _id = req.params.id
+  return Record.findOneAndDelete({ _id , userId })
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err))
+})
+
 
 module.exports = router

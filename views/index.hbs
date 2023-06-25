@@ -32,7 +32,7 @@
               <td> {{this.amount}} </td>
               <td><a href="/records/{{ this._id }}/edit" class="btn btn-outline-success">Edit</a></td>
               <td>
-                <form action="" method="POST">
+                <form action="/records/{{ this._id }}?_method=DELETE" method="POST">
                   <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>

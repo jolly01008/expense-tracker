@@ -5,12 +5,7 @@ const Record = require('../../models/record')
 const Category = require('../../models/category')
 
 router.get('/' , async (req,res) => {
-  // Record.find({})
-  //   .lean()
-  //   .sort({ _id: 'desc' })
-  //   .then(records => res.render('index' , { records }))
-  //   .then(records =>console.log('records:' , records))
-  //   .catch(err => console.log(err))
+
   const userId = req.user._id
   let totalAmount = 0
   return Category.find()
