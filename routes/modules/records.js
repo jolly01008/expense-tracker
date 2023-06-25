@@ -26,8 +26,32 @@ router.post('/new' , (req,res)=>{
 })
 
 
-router.get('/edit' , (req,res)=>{
-  res.render('edit')
+router.get('/:id/edit' , (req,res) => {
+  const userId = req.user._id
+  const _id = req.params.id
+  Category.find()
+    .lean()
+    .then((categories) => {
+      return Record.findOne({ _id , userId })
+        .populate('categoryId') //以'categoryIdy'欄位把Record跟Category資料庫關聯
+        .lean()
+        .then(record => {
+          record.date = record.date.toISOString().slice(0 , 10)
+          res.render('edit' , { record, categories })
+        })
+      .catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
+})
+
+router.put('/:id' , (req,res) => {
+  const userId = req.user._id
+  const _id = req.params.id
+  const record = req.body
+  console.log('edit record:',record)
+  return Record.findOneAndUpdate({ _id , userId } , { ...record })
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err))
 })
 
 module.exports = router

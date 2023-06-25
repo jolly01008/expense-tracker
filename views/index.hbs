@@ -26,11 +26,11 @@
         <tbody>
           {{#each records }}
             <tr>
-              <td><i class="{{this.categoryIcon}} mt-2 ms-3" style="transform: scale(2.5)"></i></td>
+              <td><i class="{{this.categoryId.icon}} mt-2 ms-3" style="transform: scale(2.5)"></i></td>
               <td> {{this.name}} </td>
               <td> {{this.date}} </td>
               <td> {{this.amount}} </td>
-              <td><a href="/records/edit" class="btn btn-outline-success">Edit</a></td>
+              <td><a href="/records/{{ this._id }}/edit" class="btn btn-outline-success">Edit</a></td>
               <td>
                 <form action="" method="POST">
                   <button type="submit" class="btn btn-outline-danger">Delete</button>

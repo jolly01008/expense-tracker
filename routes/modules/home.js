@@ -11,17 +11,25 @@ router.get('/' , async (req,res) => {
   //   .then(records => res.render('index' , { records }))
   //   .then(records =>console.log('records:' , records))
   //   .catch(err => console.log(err))
-  const records = await Record.find().lean().sort({date:"desc"})
-  const formattedRecords = []
+  const userId = req.user._id
   let totalAmount = 0
-  for(const record of records ){
-    const category = await Category.findById(record.categoryId).lean()
-    const formattedDate = new Date(record.date).toISOString().slice( 0 , 10 )
-    totalAmount += record.amount
-    formattedRecords.push({...record , categoryIcon: category.icon , date: formattedDate})
-    // console.log('formattedRecords:',formattedRecords)
-  }
-  res.render('index',{ records: formattedRecords , totalAmount })
+  return Category.find()
+    .lean()
+    .then((categories) => {
+      console.log('幹嘛用這個categories:',categories)
+      return Record.find({userId})
+        .populate('categoryId')  //以categoryId欄位，把Record跟Category資料庫關聯
+        .lean()
+        .sort({ date: 'desc' })
+        .then(records => {
+          records.forEach((record) => {
+            record.date = record.date.toISOString().slice(0, 10)
+            totalAmount += record.amount
+          })
+          return res.render('index' , { records,  totalAmount })
+        })
+        .catch(err => console.log(err))
+    })
 })
 
 

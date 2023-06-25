@@ -1,6 +1,7 @@
 const express = require('express')
 const session = require('express-session')
 const exphbs = require('express-handlebars')
+const methodOverride = require('method-override')
 const app = express()
 const port = 3000
 app.use(express.urlencoded({ extended:true })) 
@@ -17,7 +18,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true
  }))
-
+app.use(methodOverride('_method'))
 usePassport(app)
 
 app.use((req,res,next) => {
@@ -25,7 +26,6 @@ app.use((req,res,next) => {
   res.locals.user = req.user   //req.user是反序列化取出的user資訊
   next()
 })
-
 app.use(routes)
 
 
