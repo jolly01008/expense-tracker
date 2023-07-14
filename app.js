@@ -2,8 +2,13 @@ const express = require('express')
 const session = require('express-session')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
+
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config()
+}
 const app = express()
-const port = 3000
+const port = process.env.PORT
+
 app.use(express.urlencoded({ extended:true })) 
 
 const routes = require('./routes')
@@ -14,7 +19,7 @@ app.engine('hbs', exphbs({defaultLayout:'main', extname:'.hbs'}))
 app.set('view engine','hbs')
 
 app.use(session({
-  secret:'ThisisMySecret',
+  secret:process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
  }))

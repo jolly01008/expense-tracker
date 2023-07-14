@@ -18,9 +18,7 @@ router.get('/register',( req,res ) => {
 })
 
 router.post('/register',( req,res ) => {
-  console.log('post register')
   const { name,email,password,confirmPassword } = req.body
-  console.log('req.body:',req.body)
   User.findOne({ email })
     .then(user => {
       if(user){ 
