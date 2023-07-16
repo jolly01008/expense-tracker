@@ -5,43 +5,53 @@ const User = require('../user')
 const Category = require('../category')
 const userData = require('../seedsData/user.json')
 const recordData = require('../seedsData/record.json')
+const SEED_USERS = require('../seedsData/user.json')
+const SEED_RECORDS = require('../seedsData/record.json')
 
 const bcrypt = require('bcryptjs')
 
-db.once('open', () => {
-  Promise.all(
-    //把每個使用者密碼bcrypt之後，存到資料庫
-    userData.map(user =>{
-      return bcrypt
-        .genSalt(10)
-        .then(salt => bcrypt.hash(user.password,salt) )
-        .then(hash => User.create({
+//user records 分配
+SEED_USERS[0].recordsList = [0 , 1 , 2 , 4]
+SEED_USERS[1].recordsList = [3]
+
+db.once('open', async () => {
+  try{
+    //"先"撈出資料庫的所有資料
+    const categoryData = await Category.find({})
+    return Promise.all(
+      //create user: 目前有2個user使用map進行
+      SEED_USERS.map( async (user) => {
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(user.password, salt)
+        const createdUser = await User.create({
           name: user.name,
           email: user.email,
-          password: hash })
-          )
-        .then(user => {
-          //userId拿來，標記在每筆recordData上，表示屬於"資料庫內的哪個使用者"
-          const userId = user._id
-          return Promise.all(
-            //拿recordData每一筆的category去比對，哪筆與Category的name相符
-            recordData.map(record =>{
-              return Category.findOne({name: record.category})
-                .lean()
-                .then((category) => {
-                  //比對後相符的category，取得它的category._id
-                  const categoryId = category._id
-                  const newRecord = Object.assign({},record,{userId},{categoryId})
-                  return Record.create(newRecord)
-                })
-                .catch(error => console.log(error))
-            })
-          )
+          password: hash
         })
-     })
-  )
-  .then(() => {
-    console.log('records seed done!')
-    db.close() })
-  .catch(error => console.log(error))
+        console.log(`${createdUser} created!`)
+        //處理 records 與 users的關係
+        const userRecords = user.recordsList.map(index => {
+          //將所有資料依[index]非配給不同user
+          const record = SEED_RECORDS[index]
+          //把不同的user._id 記錄到各自的records中
+          record.userId = createdUser._id
+          //處理records與category的關係
+          const referenceCategory = categoryData.find((data) => {
+            //找到第一筆data.name與record.category 完全相同並用return返回資訊紀錄在referenceCategory
+            return data.name === record.category
+          })
+          //紀錄 categoryId 並回傳
+          record.categoryId = referenceCategory._id
+          return record
+        })
+        await Record.create(userRecords)
+      })
+    )
+    .then(() => {
+      console.log('all done')
+      process.exit()
+    })
+    .catch(err => console.log(err))
+  }catch(err){
+    console.log(err)}
 })
